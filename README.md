@@ -80,7 +80,8 @@ MONGO_URI=your_mongodb_uri
 PORT=5000
 JWT_SECRET=your_jwt_secret
 
-Netlify link
+vercel link to bookverse project
+https://bookverse-store-app-naz.vercel.app
 
 🙌 Credits
 Built with ❤️ by Nazareth.
