@@ -89,16 +89,6 @@ const Navbar = () => {
             Book Shop
           </NavLink>
           <NavLink
-            to="/details"
-            className={({ isActive }) =>
-              isActive
-                ? "border-b-2 border-[#1e3a8a] text-[#1e3a8a]"
-                : "hover:underline"
-            }
-          >
-            Book Details
-          </NavLink>
-          <NavLink
             to="/events"
             className={({ isActive }) =>
               isActive
