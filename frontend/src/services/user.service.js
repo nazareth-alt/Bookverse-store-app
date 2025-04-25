@@ -1,4 +1,4 @@
-import { doc, setDoc, getDoc, updateDoc, deleteDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 import { db } from "../firebase/firebase.config"; // Import the Firestore instance
 
 // Create
@@ -26,20 +26,3 @@ export const getUserFromDB = async (uid) => {
   }
 };
 
-// Update
-export const updateUserInDB = async (uid, updates) => {
-  try {
-    await updateDoc(doc(db, "users", uid), updates);
-  } catch (error) {
-    console.error("Error updating user:", error);
-  }
-};
-
-// Delete
-export const deleteUserFromDB = async (uid) => {
-  try {
-    await deleteDoc(doc(db, "users", uid));
-  } catch (error) {
-    console.error("Error deleting user:", error);
-  }
-};

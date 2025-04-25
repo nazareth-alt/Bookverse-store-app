@@ -19,8 +19,6 @@ import AboutPage from "../pages/home/AboutPage";
 import PrivateRoute from "./PrivateRoute";
 import AdminRoute from "./AdminRoute";
 import ForgotPassword from "../pages/Auth Support Pages/ForgotPassword";
-import UpdateProfile from "../pages/Auth Support Pages/UpdateProfile";
-import DeleteAccount from "../pages/Auth Support Pages/DeleteAccount";
 
 import DashboardLayout from "../pages/dashboard/DashboardLayout";
 import Dashboard from "../pages/dashboard/Dashboard";
@@ -55,9 +53,8 @@ const router = createBrowserRouter([
         { path: "orders", element: <PrivateRoute><OrderPage /></PrivateRoute> },
         { path: "books/:id", element: <SingleBook /> },
         { path: "user-dashboard", element: <PrivateRoute><UserDashboard /></PrivateRoute> },
-        { path: "update-profile", element: <UpdateProfile /> },
         { path: "forgot-password", element: <ForgotPassword /> },
-        { path: "delete-account", element: <DeleteAccount /> },
+        
         
         // Book Categories
         { path: "best-sellers", element: <BestSellers /> },

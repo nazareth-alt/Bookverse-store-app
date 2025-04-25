@@ -8,6 +8,7 @@ const Login = () => {
   const [message, setMessage] = useState("");
   const { loginUser, signInWithGoogle } = useAuth();
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
@@ -36,7 +37,7 @@ const Login = () => {
       alert("Google sign in failed!");
       console.error(error);
     }
-  }; 
+  };
 
   return (
     <div className="h-[calc(100vh-120px)] flex justify-center items-center">
@@ -59,7 +60,7 @@ const Login = () => {
               className="shadow border rounded w-full py-2 px-3 focus:outline-none focus:shadow"
             />
           </div>
-          <div className="mb-4">
+          <div className="mb-4 relative">
             <label
               htmlFor="password"
               className="block text-gray-700 text-sm font-bold mb-2"
@@ -68,12 +69,38 @@ const Login = () => {
             </label>
             <input
               {...register("password", { required: true })}
-              type="password"
+              type={showPassword ? "text" : "password"}
               id="password"
               placeholder="Password"
-              className="shadow border rounded w-full py-2 px-3 focus:outline-none focus:shadow"
+              className="shadow border rounded w-full py-2 px-3 pr-10 focus:outline-none focus:shadow"
             />
+            <span
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-9 cursor-pointer text-gray-600"
+            >
+              {showPassword ? (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path d="M10 3C5 3 1.73 7.11 1 10c.73 2.89 4 7 9 7s8.27-4.11 9-7c-.73-2.89-4-7-9-7zM10 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z" />
+                  <path d="M10 7a3 3 0 100 6 3 3 0 000-6z" />
+                </svg>
+              ) : (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path d="M13.875 12.7a4 4 0 01-5.575-5.575l-1.4-1.4A6 6 0 004 10c1.08 2.7 4 6 6 6a6 6 0 004.275-2.175l-1.4-1.4zM10 6a4 4 0 013.885 3.112L10 10.998 6.115 7.113A4 4 0 0110 6zM2 2l16 16-1.414 1.414L.586 3.414 2 2z" />
+                </svg>
+              )}
+            </span>
           </div>
+
           {message && (
             <p className="text-red-500 text-xs italic mb-3">{message}</p>
           )}
@@ -91,19 +118,13 @@ const Login = () => {
           </Link>
         </p>
         <p className="text-sm mt-3 text-gray-600">
-          <Link to="/forgot-password" className="text-blue-500 hover:text-blue-700">
+          <Link
+            to="/forgot-password"
+            className="text-red-500 hover:text-blue-700"
+          >
             Forgot your password?
           </Link>{" "}
-          |{" "}
-          <Link to="/update-profile" className="text-blue-500 hover:text-blue-700">
-            Update username
-          </Link>{" "}
-          |{" "}
-          <Link to="/delete-account" className="text-red-500 hover:text-red-700">
-            Delete account
-          </Link>
         </p>
-
 
         <div className="mt-4">
           <button
