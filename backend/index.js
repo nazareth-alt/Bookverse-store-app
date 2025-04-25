@@ -8,9 +8,9 @@ require('dotenv').config()
 // middleware 
 app.use(express.json());
 app.use(cors({
-    origin: ['http://localhost:5173', 'https://bookverse-store.vercel.app'],
+    origin: ['http://localhost:5173', 'https://bookverse-store-app-naz.vercel.app'],
     credentials: true
-}))
+})) 
 
 app.get("/", (req, res) => {
   res.send("Bookverse store Server is running!");
@@ -41,3 +41,5 @@ mongoose
     console.error("MongoDB connection failed:", err);
   });
  
+
+  
