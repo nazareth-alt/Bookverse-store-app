@@ -15,12 +15,34 @@ function App() {
   const { currentUser, logout } = useAuth();
 
   useEffect(() => {
-    if (currentUser) {
-      logout();
-    }
-    const timer = setTimeout(() => setLoading(false), 2000);
-    return () => clearTimeout(timer);
-  }, []);
+    let inactivityTimer;
+  
+    const resetTimer = () => {
+      if (inactivityTimer) clearTimeout(inactivityTimer);
+      inactivityTimer = setTimeout(() => {
+        if (currentUser) {
+          logout();
+          alert("Logged out due to inactivity.");
+        }
+      }, 10 * 60 * 1000); // 10 minutes
+    };
+  
+    const activityEvents = ["mousemove", "keydown", "mousedown", "touchstart"];
+  
+    activityEvents.forEach((event) => {
+      window.addEventListener(event, resetTimer);
+    });
+  
+    resetTimer(); // initialize timer on mount
+  
+    return () => {
+      activityEvents.forEach((event) => {
+        window.removeEventListener(event, resetTimer);
+      });
+      clearTimeout(inactivityTimer);
+    };
+  }, [currentUser, logout]);
+  
 
   if (loading) return <Loading />;
 

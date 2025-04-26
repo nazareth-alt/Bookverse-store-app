@@ -2,6 +2,8 @@ const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
 require("dotenv").config();
+const path = require('path');
+
 
 const app = express();
 
@@ -11,6 +13,9 @@ app.use(cors({
   origin: ['http://localhost:5173', 'https://bookverse-store-app-naz.vercel.app'],
   credentials: true
 }));
+
+// Serve static files (images)
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.get("/", (req, res) => {
   res.send("Bookverse store Server is running!");

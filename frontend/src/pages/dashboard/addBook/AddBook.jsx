@@ -12,28 +12,49 @@ const AddBook = () => {
   const [imageFileName, setImageFileName] = useState('');
 
   const onSubmit = async (data) => {
-    const newBookData = {
-      ...data,
-      bookImage: imageFileName, // match schema
-    };
-
     try {
-      await addBook(newBookData).unwrap();
+      const formData = new FormData();
+  
+      // Append all fields
+      Object.entries(data).forEach(([key, value]) => {
+        formData.append(key, value);
+      });
+  
+      // Append image file
+      if (imageFile) {
+        formData.append("bookImage", imageFile); // name must match backend field
+      }
+  
+      // Send FormData manually (bypassing RTK Query for this part)
+      const response = await fetch("http://localhost:5000/api/books/create-book", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`, // if using token
+        },
+        body: formData,
+      });
+  
+      const result = await response.json();
+  
+      if (!response.ok) throw new Error(result.message || "Failed to add book");
+  
       Swal.fire({
         title: "Book Added",
         text: "Your book has been successfully uploaded!",
         icon: "success",
         confirmButtonColor: "#1e3a8a",
       });
+  
       reset();
-      setImageFileName('');
       setImageFile(null);
+      setImageFileName('');
     } catch (error) {
-      console.error(error);
-      Swal.fire("Error", "Failed to add book. Please try again.", "error");
+      console.error("Add book error:", error);
+      Swal.fire("Error", error.message || "Failed to add book.", "error");
     }
   };
-
+  
+  
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
