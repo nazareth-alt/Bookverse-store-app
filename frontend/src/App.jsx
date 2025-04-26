@@ -16,6 +16,7 @@ function App() {
 
   useEffect(() => {
     let inactivityTimer;
+    const loadingTimer = setTimeout(() => setLoading(false), 2000);
   
     const resetTimer = () => {
       if (inactivityTimer) clearTimeout(inactivityTimer);
@@ -24,7 +25,7 @@ function App() {
           logout();
           alert("Logged out due to inactivity.");
         }
-      }, 10 * 60 * 1000); // 10 minutes
+      }, 10 * 60 * 1000);
     };
   
     const activityEvents = ["mousemove", "keydown", "mousedown", "touchstart"];
@@ -33,15 +34,17 @@ function App() {
       window.addEventListener(event, resetTimer);
     });
   
-    resetTimer(); // initialize timer on mount
+    resetTimer();
   
     return () => {
       activityEvents.forEach((event) => {
         window.removeEventListener(event, resetTimer);
       });
       clearTimeout(inactivityTimer);
+      clearTimeout(loadingTimer);
     };
   }, [currentUser, logout]);
+  
   
 
   if (loading) return <Loading />;
