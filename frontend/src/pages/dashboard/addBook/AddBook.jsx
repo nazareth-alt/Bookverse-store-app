@@ -1,111 +1,134 @@
-import React, { useState } from 'react';
-import InputField from './InputField';
-import SelectField from './SelectField';
+import React, { useState } from 'react'
+import InputField from './InputField'
+import SelectField from './SelectField'
 import { useForm } from 'react-hook-form';
 import { useAddBookMutation } from '../../../redux/features/books/booksApi';
 import Swal from 'sweetalert2';
 
 const AddBook = () => {
-  const { register, handleSubmit, formState: { errors }, reset } = useForm();
-  const [imageFile, setImageFile] = useState(null);
-  const [addBook, { isLoading }] = useAddBookMutation();
-  const [imageFileName, setImageFileName] = useState('');
+    const { register, handleSubmit, formState: { errors }, reset } = useForm();
+    const [imageFileName, setimageFileName] = useState('') // Placeholder for image
+    const [addBook, {isLoading, isError}] = useAddBookMutation()
 
-  const onSubmit = async (data) => {
-    try {
-      const formData = new FormData();
-  
-      // Append all fields
-      Object.entries(data).forEach(([key, value]) => {
-        formData.append(key, value);
-      });
-  
-      // Append image file
-      if (imageFile) {
-        formData.append("bookImage", imageFile); // name must match backend field
-      }
-  
-      // Send FormData manually (bypassing RTK Query for this part)
-      const response = await fetch("http://localhost:5000/api/books/create-book", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`, // if using token
-        },
-        body: formData,
-      });
-  
-      const result = await response.json();
-  
-      if (!response.ok) throw new Error(result.message || "Failed to add book");
-  
-      Swal.fire({
-        title: "Book Added",
-        text: "Your book has been successfully uploaded!",
-        icon: "success",
-        confirmButtonColor: "#1e3a8a",
-      });
-  
-      reset();
-      setImageFile(null);
-      setImageFileName('');
-    } catch (error) {
-      console.error("Add book error:", error);
-      Swal.fire("Error", error.message || "Failed to add book.", "error");
+    const onSubmit = async (data) => {
+        // Instead of uploading an image, use a placeholder URL
+        const newBookData = {
+            ...data,
+            coverImage: "https://via.placeholder.com/300x400.png?text=Book+Cover" // Placeholder image URL
+        }
+
+        try {
+            await addBook(newBookData).unwrap();
+            Swal.fire({
+                title: "Book added",
+                text: "Your book is uploaded successfully!",
+                icon: "success",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, It's Okay!"
+              });
+              reset();
+              setimageFileName('') // Reset placeholder
+        } catch (error) {
+            console.error(error);
+            alert("Failed to add book. Please try again.")   
+        }
     }
-  };
-  
-  
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setImageFile(file);
-      setImageFileName(file.name);
-    }
-  };
 
-  return (
-    <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold text-[#1e3a8a] mb-4">Add New Book</h2>
+    return (
+        <div className="max-w-lg   mx-auto md:p-6 p-3 bg-white rounded-lg shadow-md">
+            <h2 className="text-2xl font-bold text-gray-800 mb-4">Add New Book</h2>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <InputField label="Title" name="title" placeholder="Enter book title" register={register} />
-        <InputField label="Author" name="author" placeholder="Enter author name" register={register} />
-        <InputField label="ISBN" name="ISBN" placeholder="Enter ISBN" register={register} />
-        <InputField label="Description" name="description" placeholder="Enter description" type="textarea" register={register} />
+            {/* Form starts here */}
+            <form onSubmit={handleSubmit(onSubmit)} className=''>
+                {/* Reusable Input Field for Title */}
+                <InputField
+                    label="Title"
+                    name="title"
+                    placeholder="Enter book title"
+                    register={register}
+                />
 
-        {/* Genre / Category */}
-        <SelectField
-          label="Genre"
-          name="genre"
-          options={[
-            { value: '', label: 'Choose a Genre' },
-            { value: 'business', label: 'Business' },
-            { value: 'technology', label: 'Technology' },
-            { value: 'fiction', label: 'Fiction' },
-            { value: 'horror', label: 'Horror' },
-            { value: 'adventure', label: 'Adventure' },
-          ]}
-          register={register}
-        />
+                {/* Reusable Textarea for Description */}
+                <InputField
+                    label="Description"
+                    name="description"
+                    placeholder="Enter book description"
+                    type="textarea"
+                    register={register}
+                />
 
-        <InputField label="Old Price" name="oldPrice" type="number" placeholder="Enter old price" register={register} />
-        <InputField label="New Price" name="newPrice" type="number" placeholder="Enter new price" register={register} />
-        <InputField label="Stock" name="stock" type="number" placeholder="Enter stock quantity" register={register} />
-        <InputField label="Year Published" name="yearPublished" type="date" register={register} />
+                {/* Reusable Select Field for Category */}
+                <SelectField
+                    label="Category"
+                    name="category"
+                    options={[
+                        { value: '', label: 'Choose A Category' },
+                        { value: 'business', label: 'Business' },
+                        { value: 'technology', label: 'Technology' },
+                        { value: 'fiction', label: 'Fiction' },
+                        { value: 'horror', label: 'Horror' },
+                        { value: 'adventure', label: 'Adventure' },
+                    ]}
+                    register={register}
+                />
 
-        {/* Image Upload */}
-        <div className="mb-4">
-          <label className="block text-sm font-semibold text-gray-700 mb-2">Book Cover Image</label>
-          <input type="file" accept="image/*" onChange={handleFileChange} className="w-full border p-2 rounded-md" />
-          {imageFileName && <p className="text-sm text-gray-500 mt-1">Selected: {imageFileName}</p>}
+                {/* Trending Checkbox */}
+                <div className="mb-4">
+                    <label className="inline-flex items-center">
+                        <input
+                            type="checkbox"
+                            {...register('trending')}
+                            className="rounded text-blue-600 focus:ring focus:ring-offset-2 focus:ring-blue-500"
+                        />
+                        <span className="ml-2 text-sm font-semibold text-gray-700">Trending</span>
+                    </label>
+                </div>
+
+                {/* Old Price */}
+                <InputField
+                    label="Old Price"
+                    name="oldPrice"
+                    type="number"
+                    placeholder="Old Price"
+                    register={register}
+                />
+
+                {/* New Price */}
+                <InputField
+                    label="New Price"
+                    name="newPrice"
+                    type="number"
+                    placeholder="New Price"
+                    register={register}
+                />
+
+                {/* Cover Image Upload (Removed for testing purposes) */}
+                <div className="mb-4">
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Cover Image</label>
+                    <input 
+                        type="file" 
+                        accept="image/*" 
+                        className="mb-2 w-full" 
+                        disabled
+                    />
+                    {imageFileName && <p className="text-sm text-gray-500">Selected: {imageFileName}</p>}
+                </div>
+
+                {/* Submit Button */}
+                <button 
+                    type="submit" 
+                    className="w-full py-2 bg-green-500 text-white font-bold rounded-md"
+                >
+                    {isLoading ? 'Adding...' : 'Add Book'}
+                </button>
+            </form>
         </div>
+    )
+}
 
-        <button type="submit" className="w-full py-2 bg-[#1e3a8a] text-white font-semibold rounded-md hover:bg-blue-900 transition">
-          {isLoading ? 'Adding...' : 'Add Book'}
-        </button>
-      </form>
-    </div>
-  );
-};
+export default AddBook
 
-export default AddBook;
+
+
