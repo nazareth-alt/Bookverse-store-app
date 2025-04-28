@@ -20,6 +20,7 @@ const AddBook = () => {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      console.log("Image file selected:", file);
       setImagePreview(URL.createObjectURL(file));
       setImageFile(file);
     }
@@ -32,22 +33,31 @@ const AddBook = () => {
     const formData = new FormData();
     formData.append("image", imageFile);
 
-    const response = await fetch("/api/books/upload", {
-      method: "POST",
-      body: formData,
-    });
+    try {
+      console.log("Uploading image to backend...");
+      const response = await fetch("/api/books/upload", {
+        method: "POST",
+        body: formData,
+      });
 
-    if (!response.ok) {
+      if (!response.ok) {
+        console.error("Image upload failed with status:", response.status);
+        throw new Error("Image upload failed");
+      }
+
+      const data = await response.json();
+      console.log("Image uploaded successfully, data:", data);
+      return data.imagePath; // Cloudinary URL
+    } catch (error) {
+      console.error("Error during image upload:", error);
       throw new Error("Image upload failed");
     }
-
-    const data = await response.json();
-    return data.imagePath; // Cloudinary URL
   };
 
   // Submit form data
   const onSubmit = async (data) => {
     try {
+      console.log("Submitting form data:", data);
       const imagePath = await uploadImage();
       if (!imagePath) throw new Error("Image upload failed");
 
@@ -55,6 +65,8 @@ const AddBook = () => {
         ...data,
         bookImage: imagePath, // Save the Cloudinary URL
       };
+
+      console.log("Final book data to submit:", newBookData);
 
       await addBook(newBookData).unwrap();
       Swal.fire({
@@ -67,7 +79,7 @@ const AddBook = () => {
       setImagePreview("");
       setImageFile(null);
     } catch (error) {
-      console.error(error);
+      console.error("Error adding book:", error);
       Swal.fire({
         title: "Error",
         text: error.message || "Failed to add book. Please try again.",
@@ -191,3 +203,4 @@ const AddBook = () => {
 };
 
 export default AddBook;
+
