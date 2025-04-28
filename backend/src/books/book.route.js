@@ -3,7 +3,8 @@ const Book = require('./book.model');
 const { postABook, getAllBooks, getSingleBook, UpdateBook, deleteABook } = require('./book.controller');
 const verifyAdminToken = require('../middleware/verifyAdminToken');
 const multer = require('multer');
-const path = require('path');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const cloudinary = require('../utils/cloudinary'); // path to your cloudinary.js
 
 const router =  express.Router();
 
@@ -14,13 +15,12 @@ const router =  express.Router();
 // put/patch = when edit or update something
 // delete = when delete something
 
-// Configure Multer to store files in the 'uploads/' directory
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-      cb(null, 'uploads/'); // Directory where files are saved
-  },
-  filename: (req, file, cb) => {
-      cb(null, `${Date.now()}-${file.originalname}`); // Save with unique filename
+// Setup Multer-Cloudinary storage
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'Bookverse', // Folder name in Cloudinary (optional)
+    allowed_formats: ['jpg', 'png', 'jpeg'],
   },
 });
 
@@ -29,7 +29,7 @@ const upload = multer({ storage })
 // Image upload endpoint
 router.post('/upload', upload.single('image'), (req, res) => {
   try {
-      res.status(200).json({ imagePath: `/uploads/${req.file.filename}` });
+      res.status(200).json({ imagePath: req.file.path });
   } catch (error) {
       res.status(500).json({ message: 'Image upload failed', error: error.message });
   }

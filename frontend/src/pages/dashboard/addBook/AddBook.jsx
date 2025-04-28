@@ -25,7 +25,7 @@ const AddBook = () => {
     }
   };
 
-  // Upload image to backend
+  // Upload image to backend (Cloudinary)
   const uploadImage = async () => {
     if (!imageFile) return null;
 
@@ -37,8 +37,12 @@ const AddBook = () => {
       body: formData,
     });
 
+    if (!response.ok) {
+      throw new Error("Image upload failed");
+    }
+
     const data = await response.json();
-    return data.imagePath;
+    return data.imagePath; // Cloudinary URL
   };
 
   // Submit form data
@@ -49,13 +53,13 @@ const AddBook = () => {
 
       const newBookData = {
         ...data,
-        bookImage: imagePath, // Add uploaded image path
+        bookImage: imagePath, // Save the Cloudinary URL
       };
 
       await addBook(newBookData).unwrap();
       Swal.fire({
-        title: "Book added",
-        text: "Your book has been added successfully!",
+        title: "Success",
+        text: "Book added successfully!",
         icon: "success",
         confirmButtonText: "OK",
       });
@@ -66,7 +70,7 @@ const AddBook = () => {
       console.error(error);
       Swal.fire({
         title: "Error",
-        text: "Failed to add book. Please check all fields and try again.",
+        text: error.message || "Failed to add book. Please try again.",
         icon: "error",
         confirmButtonText: "OK",
       });
@@ -148,11 +152,12 @@ const AddBook = () => {
           label="Year Published"
           name="yearPublished"
           type="number"
-          placeholder="Enter year (e.g., 2014)"
+          placeholder="Enter year (e.g., 2024)"
           register={register}
           required
         />
 
+        {/* Image Upload Field */}
         <div className="mb-4">
           <label className="block text-sm font-semibold text-gray-700 mb-2">
             Cover Image
@@ -172,9 +177,11 @@ const AddBook = () => {
             />
           )}
         </div>
+
         <button
           type="submit"
-          className="w-full py-2 bg-green-500 text-white font-bold rounded-md"
+          className="w-full py-2 bg-green-500 hover:bg-green-600 text-white font-bold rounded-md"
+          disabled={isLoading}
         >
           {isLoading ? "Adding..." : "Add Book"}
         </button>
