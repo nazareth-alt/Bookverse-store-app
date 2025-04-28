@@ -14,9 +14,6 @@ app.use(cors({
   credentials: true
 }));
 
-// Serve static files (images)
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
 app.get("/", (req, res) => {
   res.send("Bookverse store Server is running!");
 });
