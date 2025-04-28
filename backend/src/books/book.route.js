@@ -24,15 +24,14 @@ const storage = multer.diskStorage({
   },
 });
 
-const upload = multer({ storage: storage })
+const upload = multer({ storage })
 
-// Route for file upload
+// Image upload endpoint
 router.post('/upload', upload.single('image'), (req, res) => {
   try {
-      // File path is available in req.file
-      res.status(200).json({ message: 'File uploaded successfully', filePath: `/uploads/${req.file.filename}` });
+      res.status(200).json({ imagePath: `/uploads/${req.file.filename}` });
   } catch (error) {
-      res.status(500).json({ message: 'File upload failed', error: error.message });
+      res.status(500).json({ message: 'Image upload failed', error: error.message });
   }
 });
 

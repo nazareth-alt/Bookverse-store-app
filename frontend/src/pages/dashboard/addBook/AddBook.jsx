@@ -7,10 +7,11 @@ import Swal from 'sweetalert2';
 
 const AddBook = () => {
     const { register, handleSubmit, formState: { errors }, reset } = useForm();
-    const [addBook, { isLoading, isError }] = useAddBookMutation();
+    const [addBook, { isLoading }] = useAddBookMutation();
     const [imagePreview, setImagePreview] = useState('');
     const [imageFile, setImageFile] = useState(null);
 
+    // Handle image selection
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -19,6 +20,7 @@ const AddBook = () => {
         }
     };
 
+    // Upload image to backend
     const uploadImage = async () => {
         if (!imageFile) return null;
 
@@ -34,6 +36,7 @@ const AddBook = () => {
         return data.imagePath;
     };
 
+    // Submit form data
     const onSubmit = async (data) => {
         try {
             const imagePath = await uploadImage();
@@ -41,13 +44,13 @@ const AddBook = () => {
 
             const newBookData = {
                 ...data,
-                coverImage: imagePath,
+                bookImage: imagePath, // Add uploaded image path
             };
 
             await addBook(newBookData).unwrap();
             Swal.fire({
                 title: "Book added",
-                text: "Your book is uploaded successfully!",
+                text: "Your book has been added successfully!",
                 icon: "success",
                 confirmButtonText: "OK"
             });
@@ -58,7 +61,7 @@ const AddBook = () => {
             console.error(error);
             Swal.fire({
                 title: "Error",
-                text: "Failed to add book. Please try again.",
+                text: "Failed to add book. Please check all fields and try again.",
                 icon: "error",
                 confirmButtonText: "OK"
             });
@@ -75,12 +78,21 @@ const AddBook = () => {
                     name="title"
                     placeholder="Enter book title"
                     register={register}
+                    required
                 />
                 <InputField
                     label="Author"
                     name="author"
                     placeholder="Enter author name"
                     register={register}
+                    required
+                />
+                <InputField
+                    label="ISBN"
+                    name="ISBN"
+                    placeholder="Enter ISBN number"
+                    register={register}
+                    required
                 />
                 <InputField
                     label="Description"
@@ -88,12 +100,13 @@ const AddBook = () => {
                     placeholder="Enter book description"
                     type="textarea"
                     register={register}
+                    required
                 />
                 <SelectField
-                    label="Category"
-                    name="category"
+                    label="Genre"
+                    name="genre"
                     options={[
-                        { value: '', label: 'Choose A Category' },
+                        { value: '', label: 'Select Genre' },
                         { value: 'business', label: 'Business' },
                         { value: 'technology', label: 'Technology' },
                         { value: 'fiction', label: 'Fiction' },
@@ -101,19 +114,35 @@ const AddBook = () => {
                         { value: 'adventure', label: 'Adventure' },
                     ]}
                     register={register}
+                    required
                 />
                 <InputField
                     label="Old Price"
                     name="oldPrice"
                     type="number"
-                    placeholder="Old Price"
+                    placeholder="Enter old price"
                     register={register}
                 />
                 <InputField
                     label="New Price"
                     name="newPrice"
                     type="number"
-                    placeholder="New Price"
+                    placeholder="Enter new price"
+                    register={register}
+                    required
+                />
+                <InputField
+                    label="Stock"
+                    name="stock"
+                    type="number"
+                    placeholder="Enter stock quantity"
+                    register={register}
+                    required
+                />
+                <InputField
+                    label="Year Published"
+                    name="yearPublished"
+                    type="date"
                     register={register}
                 />
                 <div className="mb-4">
@@ -123,6 +152,7 @@ const AddBook = () => {
                         accept="image/*"
                         className="mb-2 w-full"
                         onChange={handleImageChange}
+                        required
                     />
                     {imagePreview && (
                         <img
