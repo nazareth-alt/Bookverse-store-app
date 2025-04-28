@@ -1,56 +1,87 @@
-import React, { useState } from 'react'
-import InputField from './InputField'
-import SelectField from './SelectField'
+import React, { useState } from 'react';
+import InputField from './InputField';
+import SelectField from './SelectField';
 import { useForm } from 'react-hook-form';
 import { useAddBookMutation } from '../../../redux/features/books/booksApi';
 import Swal from 'sweetalert2';
 
 const AddBook = () => {
     const { register, handleSubmit, formState: { errors }, reset } = useForm();
-    const [imageFileName, setimageFileName] = useState('') // Placeholder for image
-    const [addBook, {isLoading, isError}] = useAddBookMutation()
+    const [addBook, { isLoading, isError }] = useAddBookMutation();
+    const [imagePreview, setImagePreview] = useState('');
+    const [imageFile, setImageFile] = useState(null);
+
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setImagePreview(URL.createObjectURL(file));
+            setImageFile(file);
+        }
+    };
+
+    const uploadImage = async () => {
+        if (!imageFile) return null;
+
+        const formData = new FormData();
+        formData.append('image', imageFile);
+
+        const response = await fetch('/api/books/upload', {
+            method: 'POST',
+            body: formData,
+        });
+
+        const data = await response.json();
+        return data.imagePath;
+    };
 
     const onSubmit = async (data) => {
-        // Instead of uploading an image, use a placeholder URL
-        const newBookData = {
-            ...data,
-            coverImage: "https://via.placeholder.com/300x400.png?text=Book+Cover" // Placeholder image URL
-        }
-
         try {
+            const imagePath = await uploadImage();
+            if (!imagePath) throw new Error('Image upload failed');
+
+            const newBookData = {
+                ...data,
+                coverImage: imagePath,
+            };
+
             await addBook(newBookData).unwrap();
             Swal.fire({
                 title: "Book added",
                 text: "Your book is uploaded successfully!",
                 icon: "success",
-                showCancelButton: true,
-                confirmButtonColor: "#3085d6",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Yes, It's Okay!"
-              });
-              reset();
-              setimageFileName('') // Reset placeholder
+                confirmButtonText: "OK"
+            });
+            reset();
+            setImagePreview('');
+            setImageFile(null);
         } catch (error) {
             console.error(error);
-            alert("Failed to add book. Please try again.")   
+            Swal.fire({
+                title: "Error",
+                text: "Failed to add book. Please try again.",
+                icon: "error",
+                confirmButtonText: "OK"
+            });
         }
-    }
+    };
 
     return (
-        <div className="max-w-lg   mx-auto md:p-6 p-3 bg-white rounded-lg shadow-md">
+        <div className="max-w-lg mx-auto md:p-6 p-3 bg-white rounded-lg shadow-md">
             <h2 className="text-2xl font-bold text-gray-800 mb-4">Add New Book</h2>
 
-            {/* Form starts here */}
-            <form onSubmit={handleSubmit(onSubmit)} className=''>
-                {/* Reusable Input Field for Title */}
+            <form onSubmit={handleSubmit(onSubmit)}>
                 <InputField
                     label="Title"
                     name="title"
                     placeholder="Enter book title"
                     register={register}
                 />
-
-                {/* Reusable Textarea for Description */}
+                <InputField
+                    label="Author"
+                    name="author"
+                    placeholder="Enter author name"
+                    register={register}
+                />
                 <InputField
                     label="Description"
                     name="description"
@@ -58,8 +89,6 @@ const AddBook = () => {
                     type="textarea"
                     register={register}
                 />
-
-                {/* Reusable Select Field for Category */}
                 <SelectField
                     label="Category"
                     name="category"
@@ -73,20 +102,6 @@ const AddBook = () => {
                     ]}
                     register={register}
                 />
-
-                {/* Trending Checkbox */}
-                <div className="mb-4">
-                    <label className="inline-flex items-center">
-                        <input
-                            type="checkbox"
-                            {...register('trending')}
-                            className="rounded text-blue-600 focus:ring focus:ring-offset-2 focus:ring-blue-500"
-                        />
-                        <span className="ml-2 text-sm font-semibold text-gray-700">Trending</span>
-                    </label>
-                </div>
-
-                {/* Old Price */}
                 <InputField
                     label="Old Price"
                     name="oldPrice"
@@ -94,8 +109,6 @@ const AddBook = () => {
                     placeholder="Old Price"
                     register={register}
                 />
-
-                {/* New Price */}
                 <InputField
                     label="New Price"
                     name="newPrice"
@@ -103,32 +116,35 @@ const AddBook = () => {
                     placeholder="New Price"
                     register={register}
                 />
-
-                {/* Cover Image Upload (Removed for testing purposes) */}
                 <div className="mb-4">
                     <label className="block text-sm font-semibold text-gray-700 mb-2">Cover Image</label>
-                    <input 
-                        type="file" 
-                        accept="image/*" 
-                        className="mb-2 w-full" 
-                        disabled
+                    <input
+                        type="file"
+                        accept="image/*"
+                        className="mb-2 w-full"
+                        onChange={handleImageChange}
                     />
-                    {imageFileName && <p className="text-sm text-gray-500">Selected: {imageFileName}</p>}
+                    {imagePreview && (
+                        <img
+                            src={imagePreview}
+                            alt="Selected Cover"
+                            className="w-32 h-32 object-cover rounded"
+                        />
+                    )}
                 </div>
-
-                {/* Submit Button */}
-                <button 
-                    type="submit" 
+                <button
+                    type="submit"
                     className="w-full py-2 bg-green-500 text-white font-bold rounded-md"
                 >
                     {isLoading ? 'Adding...' : 'Add Book'}
                 </button>
             </form>
         </div>
-    )
-}
+    );
+};
 
-export default AddBook
+export default AddBook;
+
 
 
 

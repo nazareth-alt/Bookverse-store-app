@@ -2,6 +2,9 @@ const express = require('express');
 const Book = require('./book.model');
 const { postABook, getAllBooks, getSingleBook, UpdateBook, deleteABook } = require('./book.controller');
 const verifyAdminToken = require('../middleware/verifyAdminToken');
+const multer = require('multer');
+const path = require('path');
+
 const router =  express.Router();
 
 
@@ -11,7 +14,27 @@ const router =  express.Router();
 // put/patch = when edit or update something
 // delete = when delete something
 
+// Configure Multer to store files in the 'uploads/' directory
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+      cb(null, 'uploads/'); // Directory where files are saved
+  },
+  filename: (req, file, cb) => {
+      cb(null, `${Date.now()}-${file.originalname}`); // Save with unique filename
+  },
+});
 
+const upload = multer({ storage: storage })
+
+// Route for file upload
+router.post('/upload', upload.single('image'), (req, res) => {
+  try {
+      // File path is available in req.file
+      res.status(200).json({ message: 'File uploaded successfully', filePath: `/uploads/${req.file.filename}` });
+  } catch (error) {
+      res.status(500).json({ message: 'File upload failed', error: error.message });
+  }
+});
 
 // post a book
 router.post("/create-book", verifyAdminToken, postABook);
