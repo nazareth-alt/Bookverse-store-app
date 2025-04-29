@@ -27,38 +27,39 @@ const AddBook = () => {
   };
 
   // Upload image to backend (Cloudinary)
-  const uploadImage = async () => {
+  const uploadImage = async (imageFile) => {
     if (!imageFile) return null;
-
+  
     const formData = new FormData();
-    formData.append("image", imageFile);
-
+    formData.append("file", imageFile); // Important: "file"
+    formData.append("upload_preset", "bookverse"); // From Cloudinary settings
+  
     try {
-      console.log("Uploading image to backend...");
-      const response = await fetch("/api/books/upload", {
+      const response = await fetch(`https://api.cloudinary.com/v1_1/mybookverse/image/upload`, {
         method: "POST",
         body: formData,
       });
-
+  
       if (!response.ok) {
-        console.error("Image upload failed with status:", response.status);
         throw new Error("Image upload failed");
       }
-
+  
       const data = await response.json();
-      console.log("Image uploaded successfully, data:", data);
-      return data.imagePath; // Cloudinary URL
+      console.log("Uploaded image URL:", data.secure_url);
+      return data.secure_url; // Final uploaded image URL (hosted on Cloudinary)
     } catch (error) {
-      console.error("Error during image upload:", error);
-      throw new Error("Image upload failed");
+      console.error("Error uploading image:", error);
+      throw error;
     }
   };
+  
+  
 
   // Submit form data
   const onSubmit = async (data) => {
     try {
       console.log("Submitting form data:", data);
-      const imagePath = await uploadImage();
+      const imagePath = await uploadImage(imageFile);
       if (!imagePath) throw new Error("Image upload failed");
 
       const newBookData = {

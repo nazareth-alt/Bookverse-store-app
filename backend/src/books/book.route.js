@@ -1,54 +1,24 @@
 const express = require('express');
-const Book = require('./book.model');
 const { postABook, getAllBooks, getSingleBook, UpdateBook, deleteABook } = require('./book.controller');
 const verifyAdminToken = require('../middleware/verifyAdminToken');
-const multer = require('multer');
-const { CloudinaryStorage } = require('multer-storage-cloudinary');
-const cloudinary = require('../utils/cloudinary'); // path to your cloudinary.js
 
-const router =  express.Router();
+const router = express.Router();
 
+// Routes
 
-// frontend => backend server => controller => book schema  => database => send to server => back to the frontend
-//post = when submit something fronted to db
-// get =  when get something back from db
-// put/patch = when edit or update something
-// delete = when delete something
-
-// Setup Multer-Cloudinary storage
-const storage = new CloudinaryStorage({
-  cloudinary: cloudinary,
-  params: {
-    folder: 'Bookverse', // Folder name in Cloudinary (optional)
-    allowed_formats: ['jpg', 'png', 'jpeg'],
-  },
-});
-
-const upload = multer({ storage })
-
-// Image upload endpoint
-router.post('/upload', upload.single('image'), (req, res) => {
-  try {
-      res.status(200).json({ imagePath: req.file.path });
-  } catch (error) {
-      res.status(500).json({ message: 'Image upload failed', error: error.message });
-  }
-});
-
-// post a book
+// POST a new book
 router.post("/create-book", verifyAdminToken, postABook);
 
-// get all books 
+// GET all books
 router.get("/", getAllBooks);
 
-// single book endpoint
+// GET single book
 router.get("/:id", getSingleBook);
 
-// update a book endpoint
+// PUT update a book
 router.put("/edit/:id", verifyAdminToken, UpdateBook);
 
-// delete a book endpoint
-router.delete("/:id", verifyAdminToken, deleteABook)
+// DELETE a book
+router.delete("/:id", verifyAdminToken, deleteABook);
 
-
-module.exports = router; 
+module.exports = router;
