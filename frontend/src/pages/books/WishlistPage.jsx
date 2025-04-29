@@ -57,7 +57,7 @@ const WishlistPage = () => {
               >
                 <Link to={`/books/${book._id}`}>
                   <img
-                    src={getImgUrl(book.coverImage || book.bookImage)}
+                    src={getImgUrl(book.bookImage)}
                     alt={book.title}
                     className="w-40 h-52 object-cover rounded-md border"
                   />
