@@ -35,7 +35,7 @@ const AddBook = () => {
     formData.append("upload_preset", "bookverse"); // From Cloudinary settings
   
     try {
-      const response = await fetch(`https://api.cloudinary.com/v1_1/mybookverse/image/upload`, {
+      const response = await fetch(`https://api.cloudinary.com/v1_1/drw3rtrdu/image/upload`, {
         method: "POST",
         body: formData,
       });
