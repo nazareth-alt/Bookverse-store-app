@@ -12,8 +12,6 @@ const postABook = async (req, res) => {
     }
 }
   
-
-
 // get all books by user
 const getAllBooks =  async (req, res) => {
     try {
@@ -85,3 +83,6 @@ module.exports = {
     UpdateBook,
     deleteABook
 }
+
+
+

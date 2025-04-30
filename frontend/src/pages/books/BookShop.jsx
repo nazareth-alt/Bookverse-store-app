@@ -1,14 +1,20 @@
-import React, { useEffect, useState } from "react";
-import booksData from "../../../public/books.json";
+import React, { useState, useMemo } from "react";
 import { ShoppingCart, Search } from "lucide-react";
 import { FiHeart } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../../redux/features/cart/cartSlice";
-import { addToWishList, removeFromWishlist } from "../../redux/features/wishlist/wishlistSlice";
+import {
+  addToWishList,
+  removeFromWishlist,
+} from "../../redux/features/wishlist/wishlistSlice";
 import bestSellerSticker from "../../assets/best-seller-sticker.jpg";
+import { useFetchAllBooksQuery } from "../../redux/features/books/booksApi";
 
 const BookShop = () => {
-  const [books, setBooks] = useState([]);
+  const { data = [], isLoading, isError } = useFetchAllBooksQuery();
+  const dispatch = useDispatch();
+  const wishlistItems = useSelector((state) => state.wishlist.wishlistItems);
+
   const [search, setSearch] = useState("");
   const [filters, setFilters] = useState({
     genre: "",
@@ -17,24 +23,20 @@ const BookShop = () => {
   });
   const [sortOption, setSortOption] = useState("default");
 
-  const dispatch = useDispatch();
-  const wishlistItems = useSelector((state) => state.wishlist.wishlistItems);
-
-  useEffect(() => {
-    const enrichedBooks = booksData.map((book) => ({
+  // Enrich MongoDB books data with UI-only fields
+  const books = useMemo(() => {
+    return data.map((book) => ({
       ...book,
-      _id: book.id ?? book._id,
       newPrice: parseFloat((Math.random() * 20 + 10).toFixed(2)),
       format: ["Hardcover", "Paperback", "eBook"][
         Math.floor(Math.random() * 3)
       ],
       bestSeller: Math.random() > 0.5,
     }));
-    setBooks(enrichedBooks);
-  }, []);
+  }, [data]);
 
-  const genres = [...new Set(booksData.map((b) => b.genre))];
-  const authors = [...new Set(booksData.map((b) => b.author))];
+  const genres = [...new Set(data.map((b) => b.genre))];
+  const authors = [...new Set(data.map((b) => b.author))];
   const formats = ["Hardcover", "Paperback", "eBook"];
 
   const handleFilterChange = (type, value) => {
@@ -80,6 +82,9 @@ const BookShop = () => {
       return 0;
     });
 
+  if (isLoading) return <p>Loading...</p>;
+  if (isError) return <p>Error fetching books!</p>;
+
   return (
     <div className="max-w-screen-2xl mx-auto px-4 py-10">
       <h1 className="text-3xl font-bold text-center mb-10 text-[#0a2540]">
@@ -102,23 +107,19 @@ const BookShop = () => {
             </div>
           </div>
 
-          {/* Genre Filter */}
+          {/* Filters */}
           <FilterList
             title="Genre"
             options={genres}
             selected={filters.genre}
             onChange={(val) => handleFilterChange("genre", val)}
           />
-
-          {/* Author Filter */}
           <FilterList
             title="Author"
             options={authors}
             selected={filters.author}
             onChange={(val) => handleFilterChange("author", val)}
           />
-
-          {/* Format Filter */}
           <FilterList
             title="Format"
             options={formats}
@@ -127,7 +128,7 @@ const BookShop = () => {
           />
         </aside>
 
-        {/* Books Section */}
+        {/* Book grid */}
         <div className="flex-1">
           <div className="flex justify-between items-center mb-6">
             <div className="bg-gray-100 text-[#0a2540] px-4 py-3 rounded-xl">
@@ -153,7 +154,6 @@ const BookShop = () => {
                 key={book._id}
                 className="border border-gray-200 p-4 rounded-lg shadow-md relative group"
               >
-                {/* Heart Icon */}
                 <button
                   onClick={() => handleToggleWishlist(book)}
                   className="absolute top-3 left-3 bg-white rounded-full p-1 shadow-md z-10 cursor-pointer"
@@ -169,7 +169,6 @@ const BookShop = () => {
                   />
                 </button>
 
-                {/* Best Seller Sticker */}
                 {book.bestSeller && (
                   <img
                     src={bestSellerSticker}
@@ -209,14 +208,15 @@ const BookShop = () => {
   );
 };
 
-// Reusable Filter Section
 const FilterList = ({ title, options, selected, onChange }) => (
   <div className="pb-4 border-b border-gray-300">
     <h2 className="font-bold text-lg mb-2">{title}</h2>
     <ul className="space-y-2">
       {options.map((option) => (
         <li key={option} className="flex justify-between items-center">
-          <span className={selected === option ? "text-blue-800 font-semibold" : ""}>
+          <span
+            className={selected === option ? "text-blue-800 font-semibold" : ""}
+          >
             {option}
           </span>
           <input
