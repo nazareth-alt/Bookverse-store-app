@@ -9,6 +9,7 @@ import {
 } from "../../redux/features/wishlist/wishlistSlice";
 import bestSellerSticker from "../../assets/best-seller-sticker.jpg";
 import { useFetchAllBooksQuery } from "../../redux/features/books/booksApi";
+import getImgUrl from "../../utils/getImgUrl";
 
 const BookShop = () => {
   const { data = [], isLoading, isError } = useFetchAllBooksQuery();
@@ -135,7 +136,9 @@ const BookShop = () => {
               Showing {filteredBooks.length} results
             </div>
             <div>
-              <label className="mr-2 text-[#0a2540] font-medium">Sort by:</label>
+              <label className="mr-2 text-[#0a2540] font-medium">
+                Sort by:
+              </label>
               <select
                 value={sortOption}
                 onChange={(e) => setSortOption(e.target.value)}
@@ -178,10 +181,11 @@ const BookShop = () => {
                 )}
 
                 <img
-                  src={`/books/${book.bookImage}`}
+                  src={getImgUrl(book.bookImage)}
                   alt={book.title}
                   className="w-full h-60 object-cover rounded mb-3"
                 />
+
                 <h3 className="font-semibold text-lg">{book.title}</h3>
                 <p className="text-sm text-gray-600">by {book.author}</p>
                 <p className="text-sm text-gray-500">
@@ -232,4 +236,3 @@ const FilterList = ({ title, options, selected, onChange }) => (
 );
 
 export default BookShop;
-
