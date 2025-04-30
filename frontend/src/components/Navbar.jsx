@@ -109,7 +109,7 @@ const Navbar = () => {
           >
             {currentUser ? (
               <>
-                <button onClick={() => setIsDropdownOpen(!isDropdownOpen)} className="flex items-center">
+                <button onClick={() => setIsDropdownOpen(!isDropdownOpen)} className="flex items-center justify-center">
                   <img
                     src={avatarImg}
                     alt="User Avatar"
