@@ -36,6 +36,9 @@ const BookShop = () => {
     }));
   }, [data]);
 
+  if (isLoading) return <p>Loading...</p>;
+  if (isError) return <p>Error fetching books!</p>;
+
   const genres = [...new Set(data.map((b) => b.genre))];
   const authors = [...new Set(data.map((b) => b.author))];
   const formats = ["Hardcover", "Paperback", "eBook"];
@@ -181,9 +184,9 @@ const BookShop = () => {
                 )}
 
                 <img
-                  src={getImgUrl(book.bookImage)}
+                  src={book.bookImage}
                   alt={book.title}
-                  className="w-full h-60 object-cover rounded mb-3"
+                  className="w-full h-60 object-cover rounded mb-3 book-image"
                 />
 
                 <h3 className="font-semibold text-lg">{book.title}</h3>
