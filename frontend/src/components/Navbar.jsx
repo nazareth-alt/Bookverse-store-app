@@ -101,14 +101,15 @@ const Navbar = () => {
         </div>
 
         {/* Right Icons */}
-        <div className="flex items-center gap-3 relative">
+        <div className="relative flex items-center md:space-x-3 space-x-2">
+
           <div
             className="relative flex items-center md:space-x-3 space-x-2"
             ref={dropdownRef}
           >
             {currentUser ? (
               <>
-                <button onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
+                <button onClick={() => setIsDropdownOpen(!isDropdownOpen)} className="flex items-center">
                   <img
                     src={avatarImg}
                     alt="User Avatar"
