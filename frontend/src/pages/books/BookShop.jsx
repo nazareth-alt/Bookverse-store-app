@@ -1,6 +1,8 @@
 import React, { useState, useMemo } from "react";
 import { ShoppingCart, Search } from "lucide-react";
 import { FiHeart } from "react-icons/fi";
+import { getImgUrl } from "../../utils/getImgUrl";
+import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../../redux/features/cart/cartSlice";
 import {
@@ -135,7 +137,9 @@ const BookShop = () => {
               Showing {filteredBooks.length} results
             </div>
             <div>
-              <label className="mr-2 text-[#0a2540] font-medium">Sort by:</label>
+              <label className="mr-2 text-[#0a2540] font-medium">
+                Sort by:
+              </label>
               <select
                 value={sortOption}
                 onChange={(e) => setSortOption(e.target.value)}
@@ -177,11 +181,13 @@ const BookShop = () => {
                   />
                 )}
 
-                <img
-                  src={`/books/${book.bookImage}`}
-                  alt={book.title}
-                  className="w-full h-60 object-cover rounded mb-3"
-                />
+                <Link to={`/books/${book._id}`}>
+                  <img
+                    src={getImgUrl(book?.bookImage)}
+                    alt={book?.title || "Book cover"}
+                    className="w-full h-60 object-cover rounded mb-3"
+                  />
+                </Link>
                 <h3 className="font-semibold text-lg">{book.title}</h3>
                 <p className="text-sm text-gray-600">by {book.author}</p>
                 <p className="text-sm text-gray-500">
