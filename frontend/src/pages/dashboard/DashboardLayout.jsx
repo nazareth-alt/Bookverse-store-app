@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import { HiViewGridAdd } from "react-icons/hi";
 import { MdOutlineManageHistory, MdNotifications } from "react-icons/md";
@@ -8,16 +8,32 @@ import { AiOutlinePieChart } from "react-icons/ai";
 const DashboardLayout = () => {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  const sidebarRef = useRef(null);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     navigate("/");
   };
 
+  // Close sidebar when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
+        setIsMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
     <section className="flex min-h-screen md:bg-gray-100">
       {/* Sidebar */}
       <aside
+        ref={sidebarRef}
         className={`${
           isMenuOpen ? "block" : "hidden"
         } sm:flex sm:flex-col bg-[#1e3a8a] text-white sm:w-64 w-full absolute sm:static z-50`}
@@ -95,12 +111,25 @@ const DashboardLayout = () => {
           </button>
 
           {/* Admin Info */}
-          <div className="flex items-center space-x-4">
-            <MdNotifications className="h-6 w-6 text-gray-500" />
-            <div className="text-right">
-              <p className="text-sm font-bold">Admin Account</p>
-              <p className="text-xs text-gray-500">admin@example.com</p>
-            </div>
+          <div className="relative">
+            <button
+              onClick={() => setIsNotificationOpen(!isNotificationOpen)}
+              className="p-3"
+            >
+              <MdNotifications className="h-6 w-6 text-gray-500" />
+            </button>
+            {isNotificationOpen && (
+              <div className="absolute right-0 mt-2 bg-white shadow-lg rounded-lg w-64">
+                <div className="p-4 border-b">
+                  <h2 className="font-bold text-gray-700">Notifications</h2>
+                </div>
+                <ul className="p-4">
+                  <li className="text-gray-600">Event 1: Book Fair</li>
+                  <li className="text-gray-600">Event 2: Author Meetup</li>
+                  <li className="text-gray-600">Event 3: Writing Workshop</li>
+                </ul>
+              </div>
+            )}
           </div>
         </header>
         <main className="p-6 sm:p-10">
