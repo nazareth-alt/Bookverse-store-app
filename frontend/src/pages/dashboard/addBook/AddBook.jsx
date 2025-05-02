@@ -29,21 +29,24 @@ const AddBook = () => {
   // Upload image to backend (Cloudinary)
   const uploadImage = async (imageFile) => {
     if (!imageFile) return null;
-  
+
     const formData = new FormData();
     formData.append("file", imageFile); // Important: "file"
     formData.append("upload_preset", "bookverse"); // From Cloudinary settings
-  
+
     try {
-      const response = await fetch(`https://api.cloudinary.com/v1_1/drw3rtrdu/image/upload`, {
-        method: "POST",
-        body: formData,
-      });
-  
+      const response = await fetch(
+        `https://api.cloudinary.com/v1_1/drw3rtrdu/image/upload`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
       if (!response.ok) {
         throw new Error("Image upload failed");
       }
-  
+
       const data = await response.json();
       console.log("Uploaded image URL:", data.secure_url);
       return data.secure_url; // Final uploaded image URL (hosted on Cloudinary)
@@ -52,8 +55,6 @@ const AddBook = () => {
       throw error;
     }
   };
-  
-  
 
   // Submit form data
   const onSubmit = async (data) => {
@@ -130,29 +131,55 @@ const AddBook = () => {
           options={[
             { value: "", label: "Select Genre" },
             { value: "business", label: "Business" },
-            { value: "technology", label: "Technology" },
             { value: "fiction", label: "Fiction" },
+            { value: "historical fiction", label: "Historical Fiction" },
+            { value: "spirituality", label: "Spirituality" },
+            { value: "memoir", label: "Memoir" },
+            { value: "finance", label: "Finance" },
+            { value: "romance", label: "Romance" },
+            { value: "self-help", label: "Self-Help" },
+            { value: "autobiography", label: "Autobiography" },
+            { value: "short stories", label: "Short Stories" },
+            { value: "christian inspiration", label: "Christian Inspiration" },
+            { value: "young adult", label: "Young Adult" },
+            { value: "biography", label: "Biography" },
+            { value: "mystery", label: "Mystery" },
+            { value: "thriller", label: "Thriller" },
             { value: "horror", label: "Horror" },
             { value: "adventure", label: "Adventure" },
+            { value: "science fiction", label: "Science Fiction" },
+            { value: "fantasy", label: "Fantasy" },
+            { value: "drama", label: "Drama" },
+            { value: "poetry", label: "Poetry" },
+            { value: "education", label: "Education" },
+            { value: "health", label: "Health" },
+            { value: "relationships", label: "Relationships" },
+            { value: "philosophy", label: "Philosophy" },
+            { value: "psychology", label: "Psychology" },
           ]}
           register={register}
           required
         />
+
         <InputField
           label="Old Price"
           name="oldPrice"
           type="number"
+          step="0.01"
           placeholder="Enter old price"
           register={register}
         />
+
         <InputField
           label="New Price"
           name="newPrice"
           type="number"
+          step="0.01"
           placeholder="Enter new price"
           register={register}
           required
         />
+
         <InputField
           label="Stock"
           name="stock"
@@ -204,4 +231,3 @@ const AddBook = () => {
 };
 
 export default AddBook;
-
