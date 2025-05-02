@@ -110,19 +110,21 @@ const DashboardLayout = () => {
           </button>
 
           {/* Admin Info */}
-          <div className="flex items-center space-x-4">
-            <img
-              src="https://randomuser.me/api/portraits/men/75.jpg"
-              alt="Admin Profile"
-              className="h-10 w-10 rounded-full"
-            />
-            <div>
-              <p className="text-sm font-bold">John Doe</p>
-              <p className="text-xs text-gray-500">Admin</p>
-            </div>
+          <div className="flex items-center space-x-4 ml-auto">
             <Link to="/events" className="p-3">
               <MdNotifications className="h-6 w-6 text-gray-500 hover:text-blue-500" />
             </Link>
+            <div className="flex items-center space-x-2">
+              <img
+                src="https://i.pinimg.com/736x/e4/02/9c/e4029cb1ff448efd7631ea0a1a4c4f71.jpg"
+                alt="Admin Profile"
+                className="h-10 w-10 rounded-full"
+              />
+              <div>
+                <p className="text-sm font-bold">Precious Ndaba</p>
+                <p className="text-xs text-gray-500">Admin</p>
+              </div>
+            </div>
           </div>
         </header>
         <main className="p-6 sm:p-10">
