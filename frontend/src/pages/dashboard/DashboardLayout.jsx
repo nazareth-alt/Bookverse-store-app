@@ -8,7 +8,6 @@ import { AiOutlinePieChart } from "react-icons/ai";
 const DashboardLayout = () => {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const sidebarRef = useRef(null);
 
   const handleLogout = () => {
@@ -111,25 +110,19 @@ const DashboardLayout = () => {
           </button>
 
           {/* Admin Info */}
-          <div className="relative">
-            <button
-              onClick={() => setIsNotificationOpen(!isNotificationOpen)}
-              className="p-3"
-            >
-              <MdNotifications className="h-6 w-6 text-gray-500" />
-            </button>
-            {isNotificationOpen && (
-              <div className="absolute right-0 mt-2 bg-white shadow-lg rounded-lg w-64">
-                <div className="p-4 border-b">
-                  <h2 className="font-bold text-gray-700">Notifications</h2>
-                </div>
-                <ul className="p-4">
-                  <li className="text-gray-600">Event 1: Book Fair</li>
-                  <li className="text-gray-600">Event 2: Author Meetup</li>
-                  <li className="text-gray-600">Event 3: Writing Workshop</li>
-                </ul>
-              </div>
-            )}
+          <div className="flex items-center space-x-4">
+            <img
+              src="https://randomuser.me/api/portraits/men/75.jpg"
+              alt="Admin Profile"
+              className="h-10 w-10 rounded-full"
+            />
+            <div>
+              <p className="text-sm font-bold">John Doe</p>
+              <p className="text-xs text-gray-500">Admin</p>
+            </div>
+            <Link to="/events" className="p-3">
+              <MdNotifications className="h-6 w-6 text-gray-500 hover:text-blue-500" />
+            </Link>
           </div>
         </header>
         <main className="p-6 sm:p-10">
