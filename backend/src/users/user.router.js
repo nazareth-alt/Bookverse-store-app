@@ -8,28 +8,28 @@ const router = express.Router();
 
 const JWT_SECRET = process.env.JWT_SECRET_KEY;
 
-// Create Admin User
-router.post("/create-admin", verifyAdminToken, async (req, res) => {
-    const { email, username, password } = req.body;
+// Create new admin
+router.post('/create-admin', verifyAdminToken, async (req, res) => {
+    const { username, password } = req.body;
 
     try {
-        // Check if the email or username already exists
-        const existingUser = await User.findOne({ $or: [{ email }, { username }] });
+        // Check if the username already exists
+        const existingUser = await User.findOne({ username });
         if (existingUser) {
-            return res.status(400).json({ message: "Email or username already exists!" });
+            return res.status(400).json({ message: 'Username already exists!' });
         }
 
-        // Hash the password for security
-        const hashedPassword = await bcrypt.hash(password, 10);
-
         // Create a new admin user
-        const newAdmin = new User({ email, username, password: hashedPassword, role: "admin" });
+        const newAdmin = new User({ username, password, role: 'admin' });
         await newAdmin.save();
 
-        res.status(201).json({ message: "Admin user created successfully!", user: { email, username, role: "admin" } });
+        res.status(201).json({
+            message: 'Admin user created successfully!',
+            user: { username: newAdmin.username, role: newAdmin.role },
+        });
     } catch (error) {
-        console.error("Error creating admin user:", error);
-        res.status(500).json({ message: "Failed to create admin user" });
+        console.error('Error creating admin user:', error);
+        res.status(500).json({ message: 'Failed to create admin user' });
     }
 });
 
